@@ -5,7 +5,7 @@
 -export([guid/1, guid/2, guid/3, priv_dir/1]).
 -export([md5/1, hmac_sha/3, is_exists/2]).
 -export([bin/1, atom/1, bool/1, list/1, int/1, int/2, float/1, float/2, number/1, number/2]).
--export([cmd/2]).
+-export([cmd/2, random_string/1]).
 
 guid(Len) -> guid(Len, fun(_)-> true end).
 guid(Len, Fun)-> guid(Len, Fun, 10).
@@ -17,6 +17,12 @@ guid(Len, Fun, Step) when (Len>0) and (Len=<32) ->
         false -> guid(Len,Fun, Step-1);
         _ -> {ok, Value}
     end.
+
+random_string(Len) ->
+    Chrs = list_to_tuple("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"),
+    ChrsSize = size(Chrs),
+    F = fun(_, R) -> [element(random:uniform(ChrsSize), Chrs) | R] end,
+    lists:foldl(F, "", lists:seq(1, Len)).
 
 md5(BinStr)->
     <<N:128>> = erlang:md5(BinStr),
